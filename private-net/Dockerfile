@@ -15,8 +15,7 @@ RUN curl -L https://github.com/sequenceiq/docker-alpine-dig/releases/download/v9
 
 COPY --from=builder /go-ethereum/build/bin/geth /usr/local/bin/
 COPY --from=builder /go-ethereum/build/bin/bootnode /usr/local/bin/
-COPY ./private-net/genesis.json /root/genesis.json 
-COPY ./private-net/password.txt /root/password.txt 
+COPY ./private-net /root/
 
 EXPOSE 8545 8546 30303 30303/udp 30304/udp
 ENTRYPOINT ["geth"]
