@@ -26,8 +26,8 @@ services:
       - -c
       - |
           IP=$$(dig +short bootnode)
-          geth \
-          --bootnodes=enode://$$BOOTNODE_ENODE@$$IP:3031
+          geth \          
+          --bootnodes=enode://$$BOOTNODE_ENODE@$$(dig +short bootnode):3031 \
           --networkid $$NETWORK_ID \
           --mine \
           --minerthreads=1 \
@@ -45,9 +45,8 @@ services:
       - ash
       - -c
       - |
-          IP=$$(dig +short bootnode)
           geth \
-          --bootnodes=enode://$$BOOTNODE_ENODE@$$IP:3031 \
+          --bootnodes=enode://$$BOOTNODE_ENODE@$$(dig +short bootnode):3031 \
           --networkid $$NETWORK_ID \
           --password /private-net/files/password.txt \
           --unlock "$${UNLOCKED_ACCOUNTS}" \
