@@ -29,6 +29,7 @@ services:
           geth \          
           --bootnodes=enode://$$BOOTNODE_ENODE@$$(dig +short bootnode):3031 \
           --networkid $$NETWORK_ID \
+          --rpcaddr 0.0.0.0 \
           --mine \
           --minerthreads=1 \
           --etherbase=$${MINER_ETHERBASE}
@@ -37,7 +38,7 @@ services:
     depends_on:
       - bootnode
     ports:
-      - "8545:8545"
+      - "8545"
     env_file: .env
     volumes:
       - ./keystore/:/root/.ethereum/keystore

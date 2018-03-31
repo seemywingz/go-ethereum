@@ -1,3 +1,5 @@
+// loadScript("/private-net/scripts/gethLoad.js")
+
 function allBalances() {
   var totalBal = 0;
   for (var acctNum in eth.accounts) {
