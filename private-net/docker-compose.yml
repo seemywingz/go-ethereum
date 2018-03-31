@@ -1,0 +1,63 @@
+version: '2'
+
+# geth Private Network
+# Start with: docker-compose up -d
+
+services:
+  geth-init:
+    build: 
+      context: ../
+      dockerfile: /private-net/Dockerfile
+    image: geth
+    # command: init /root/genesis.json
+    entrypoint:
+      - ash
+      - -c
+      - |
+          geth account new --password /root/password.txt
+          geth init /root/genesis.json
+  bootnode:
+    depends_on:
+      - geth-init
+    image: geth
+    ports:
+      - "30301/udp"
+    entrypoint: bootnode -nodekeyhex df5fd5b680ff209fae221296da25c928b48cd32aee6fbb4ede5431d4d6bb0e7b
+  miner:
+    depends_on:
+      - bootnode
+    image: geth
+    environment:
+      - ENODE=3b8fd7c0bec1010461eeb9694a08ff512b19be7bbaf9bcc99626b0a47d3948350d97a482cbbab4f2f8a15ecc07de3c9c4bb9091246a33d3431678ac3cd036539
+    entrypoint:
+      - ash
+      - -c
+      - |
+          geth \
+          --bootnodes=enode://$$ENODE@$$IP:3031
+          --networkid 1985 \
+          --mine \
+          --minerthreads=1 \
+          --etherbase=0x0000000000000000000000000000000000000000
+  node:
+    depends_on:
+      - bootnode
+    image: geth
+    ports:
+      - "8545:8545"
+    environment:
+      - ENODE=3b8fd7c0bec1010461eeb9694a08ff512b19be7bbaf9bcc99626b0a47d3948350d97a482cbbab4f2f8a15ecc07de3c9c4bb9091246a33d3431678ac3cd036539
+    entrypoint:
+      - ash
+      - -c
+      - |
+          IP=$$(dig +short bootnode)
+          geth account new --password /root/password.txt
+          geth \
+          --bootnodes=enode://$$ENODE@$$IP:3031 \
+          --networkid 1985 \
+          --ipcdisable \
+          --rpc \
+          --rpcport 8545 \
+          --rpcaddr 0.0.0.0 \
+          --rpccorsdomain "*"
