@@ -4,43 +4,22 @@ version: '2'
 # Start with: docker-compose up -d
 
 services:
-  geth-init:
-    build: 
-      context: ../
-      dockerfile: /private-net/Dockerfile
-    image: geth
-    entrypoint:
-      - ash
-      - -c
-      - /root/geth-init.sh
   bootnode:
-    depends_on:
-      - geth-init
+    build: 
+      context: ..
+      dockerfile: ./private-net/Dockerfile
     image: geth
     ports:
       - "30301/udp"
-    entrypoint: bootnode -nodekeyhex df5fd5b680ff209fae221296da25c928b48cd32aee6fbb4ede5431d4d6bb0e7b
-  miner:
-    depends_on:
-      - bootnode
-    image: geth
     env_file: .env
     entrypoint:
       - ash
       - -c
-      - |
-          geth \
-          --bootnodes=enode://$$ENODE@$$IP:3031
-          --networkid 1985 \
-          --mine \
-          --minerthreads=1 \
-          --etherbase=0x0000000000000000000000000000000000000000
-  node:
+      - bootnode --nodekeyhex $$NODE_KEY_HEX
+  miner:
+    image: geth
     depends_on:
       - bootnode
-    image: geth
-    ports:
-      - "8545:8545"
     env_file: .env
     entrypoint:
       - ash
@@ -48,9 +27,30 @@ services:
       - |
           IP=$$(dig +short bootnode)
           geth \
-          --bootnodes=enode://$$ENODE@$$IP:3031 \
-          --networkid 1985 \
-          --ipcdisable \
+          --bootnodes=enode://$$BOOTNODE_ENODE@$$IP:3031
+          --networkid $$NETWORK_ID \
+          --mine \
+          --minerthreads=1 \
+          --etherbase=$${MINER_ETHERBASE}
+  node:
+    image: geth
+    depends_on:
+      - bootnode
+    ports:
+      - "8545:8545"
+    env_file: .env
+    volumes:
+      - ./keystore/:/root/.ethereum/keystore
+    entrypoint:
+      - ash
+      - -c
+      - |
+          IP=$$(dig +short bootnode)
+          geth \
+          --bootnodes=enode://$$BOOTNODE_ENODE@$$IP:3031 \
+          --networkid $$NETWORK_ID \
+          --password /private-net/files/password.txt \
+          --unlock "$${UNLOCKED_ACCOUNTS}" \
           --rpc \
           --rpcport 8545 \
           --rpcaddr 0.0.0.0 \
