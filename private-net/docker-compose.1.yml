@@ -4,27 +4,39 @@ version: '2'
 # Start with: docker-compose up -d
 
 services:
+#   bootnode:
+#     build: 
+#       context: ..
+#       dockerfile: ./private-net/Dockerfile
+#     image: geth-private-net
+#     ports:
+#       - "30301/udp"
+#     env_file: .env
+#     entrypoint:
+#       - ash
+#       - -c
+#       - bootnode --nodekeyhex $$BOOTNODE_KEY_HEX
   bootnode:
     build: 
       context: ..
       dockerfile: ./private-net/Dockerfile
     image: geth-private-net
     ports:
-      - "8545:8545"
+      - "8545"
     env_file: .env
-    networks:
-      geth-private:
-        ipv4_address: 172.19.0.2
     entrypoint:
       - ash
       - -c
       - |
+          IP=$$(dig +short bootnode)
           geth \
-          --nodekeyhex $$BOOTNODE_KEY_HEX \
+          --fast \
+          --nodekeyhex $$MINER_KEY_HEX \
           --networkid $$NETWORK_ID \
+          --bootnodes=enode://$$BOOTNODE_ENODE@$$IP:3031 \
           --password /private-net/files/password.txt \
           --unlock $$UNLOCKED_ACCOUNTS \
-          --etherbase $$ETHERBASE \
+          --etherbase 0 \
           --rpc \
           --rpcport 8545 \
           --rpcaddr 0.0.0.0 \
@@ -38,34 +50,22 @@ services:
     ports:
       - "8545"
     env_file: .env
-    volumes:
-      - ./keystore/:/root/.ethereum/keystore
-      - ./files/static-nodes.json:/root/.ethereum/geth/static-nodes.json
-    networks:
-      geth-private:
+    # volumes:
+    #   - ./keystore/:/root/.ethereum/keystore
     entrypoint:
       - ash
       - -c
       - |
+          IP=$$(dig +short bootnode)
           geth \
           --fast \
           --nodekeyhex $$NODE_KEY_HEX \
           --networkid $$NETWORK_ID \
+          --bootnodes=enode://$$BOOTNODE_ENODE@$$IP:3031 \
           --password /private-net/files/password.txt \
           --unlock $$UNLOCKED_ACCOUNTS \
-          --etherbase $$ETHERBASE \
+          --etherbase 0 \
           --rpc \
           --rpcport 8545 \
           --rpcaddr 0.0.0.0 \
           --rpccorsdomain "*"
-
-networks:
-  geth-private:
-    driver: bridge
-    ipam:
-     config:
-       - subnet: 172.19.0.0/16
-         gateway: 172.19.0.1
-
-# BOOTNODE_IP=$$(dig +short bootnode)
-# --bootnodes=enode://$$BOOTNODE_ENODE@172.19.0.2:3030 \
