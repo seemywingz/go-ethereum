@@ -11,3 +11,5 @@ eth.pendingTransactions
 web3.eth.getTransactionReceipt("receiptHash")
 
 admin.addPeer("enode://3b8fd7c0bec1010461eeb9694a08ff512b19be7bbaf9bcc99626b0a47d3948350d97a482cbbab4f2f8a15ecc07de3c9c4bb9091246a33d3431678ac3cd036539@172.19.0.2:30303")
+
+personal.unlockAccount("0xbebe38ec6ef2b5f3b56bfebb353ebc860e382155", "password")
