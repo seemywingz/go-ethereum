@@ -8,7 +8,7 @@ services:
     build: 
       context: ..
       dockerfile: ./private-net/Dockerfile
-    image: geth
+    image: geth-private
     ports:
       - "30301/udp"
     env_file: .env
@@ -16,42 +16,30 @@ services:
       - ash
       - -c
       - bootnode --nodekeyhex $$NODE_KEY_HEX
-  miner:
-    image: geth
-    depends_on:
-      - bootnode
-    env_file: .env
-    entrypoint:
-      - ash
-      - -c
-      - |
-          IP=$$(dig +short bootnode)
-          geth \          
-          --bootnodes=enode://$$BOOTNODE_ENODE@$$(dig +short bootnode):3031 \
-          --networkid $$NETWORK_ID \
-          --rpcaddr 0.0.0.0 \
-          --mine \
-          --minerthreads=1 \
-          --etherbase=$${MINER_ETHERBASE}
   node:
-    image: geth
+    image: geth-private
     depends_on:
       - bootnode
     ports:
       - "8545"
     env_file: .env
-    volumes:
-      - ./keystore/:/root/.ethereum/keystore
+    # volumes:
+    #   - ./keystore/:/root/.ethereum/keystore
     entrypoint:
       - ash
       - -c
       - |
+          IP=$$(dig +short bootnode)
           geth \
-          --bootnodes=enode://$$BOOTNODE_ENODE@$$(dig +short bootnode):3031 \
+          --fast \
           --networkid $$NETWORK_ID \
+          --bootnodes=enode://$$BOOTNODE_ENODE@$$IP:3031 \
           --password /private-net/files/password.txt \
-          --unlock "$${UNLOCKED_ACCOUNTS}" \
+          --unlock $$UNLOCKED_ACCOUNTS \
           --rpc \
           --rpcport 8545 \
           --rpcaddr 0.0.0.0 \
-          --rpccorsdomain "*"
+          --rpccorsdomain "*" \
+          --mine \
+          --minerthreads=1 \
+          --etherbase 0
