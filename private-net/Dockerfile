@@ -10,8 +10,9 @@ RUN cd /go-ethereum && make all
 FROM alpine:latest
 
 RUN apk update && apk add --no-cache curl ca-certificates
+
 # Install dig So We Can Get bootnode IP
-RUN curl -L https://github.com/sequenceiq/docker-alpine-dig/releases/download/v9.10.2/dig.tgz|tar -xzv -C /usr/local/bin/
+# RUN curl -L https://github.com/sequenceiq/docker-alpine-dig/releases/download/v9.10.2/dig.tgz|tar -xzv -C /usr/local/bin/
 
 COPY --from=builder /go-ethereum/build/bin/geth /usr/local/bin/
 COPY --from=builder /go-ethereum/build/bin/bootnode /usr/local/bin/

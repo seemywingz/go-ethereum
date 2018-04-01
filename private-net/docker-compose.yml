@@ -48,7 +48,7 @@ services:
       - |
           geth \
           --fast \
-          --nodekeyhex $$NODE_KEY_HEX \
+          # --nodekeyhex $$NODE_KEY_HEX \
           --networkid $$NETWORK_ID \
           --password /private-net/files/password.txt \
           --unlock $$UNLOCKED_ACCOUNTS \
