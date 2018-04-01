@@ -7,11 +7,13 @@ services:
   bootnode:
     build: 
       context: ..
-      dockerfile: ./private-net/Dockerfile
+      dockerfile: ./private-net/Dockerfile.preBuilt
     image: geth-private-net
     ports:
       - "8545:8545"
     env_file: .env
+    # volumes:
+      # - ./keystore/:/root/.ethereum/keystore
     networks:
       geth-private:
         ipv4_address: 172.19.0.2
@@ -38,9 +40,6 @@ services:
     ports:
       - "8545"
     env_file: .env
-    volumes:
-      - ./keystore/:/root/.ethereum/keystore
-      - ./files/static-nodes.json:/root/.ethereum/geth/static-nodes.json
     networks:
       geth-private:
     entrypoint:
@@ -67,5 +66,6 @@ networks:
        - subnet: 172.19.0.0/16
          gateway: 172.19.0.1
 
+# For Reference:
 # BOOTNODE_IP=$$(dig +short bootnode)
 # --bootnodes=enode://$$BOOTNODE_ENODE@172.19.0.2:3030 \

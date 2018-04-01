@@ -6,7 +6,7 @@ web3.fromWei(eth.getBalance("0xbebe38ec6ef2b5f3b56bfebb353ebc860e382155"), "ethe
 
 web3.fromWei(eth.getBalance(eth.coinbase), "ether")
 
-eth.sendTransaction({from:'0xbebe38ec6ef2b5f3b56bfebb353ebc860e382155', to:'0xC96D52Ea2aC094FBd259745B962aCC4b06274D8C', value: web3.toWei(0.05, "ether"), gas:21000});
+eth.sendTransaction({from:'0xbebe38ec6ef2b5f3b56bfebb353ebc860e382155', to:'0xC96D52Ea2aC094FBd259745B962aCC4b06274D8C', value: web3.toWei(500, "ether"), gas:21000});
 eth.pendingTransactions
 web3.eth.getTransactionReceipt("receiptHash")
 

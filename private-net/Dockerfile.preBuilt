@@ -9,7 +9,6 @@ RUN curl -L https://github.com/sequenceiq/docker-alpine-dig/releases/download/v9
 COPY ./private-net/files/ /private-net/files/
 COPY ./private-net/scripts/ /private-net/scripts/
 COPY ./private-net/keystore /root/.ethereum/keystore
+COPY ./private-net/files/static-nodes.json /root/.ethereum/geth/static-nodes.json
 
 RUN geth init /private-net/files/genesis.json
-
-EXPOSE 8545 8546 30303 30303/udp 30304/udp
