@@ -7,32 +7,16 @@ services:
   bootnode:
     build: 
       context: ..
-      dockerfile: ./private-net/Dockerfile
+      dockerfile: ./private-net/Dockerfile.preBuilt
     image: geth-private-net
     ports:
       - "8545:8545"
     env_file: .env
-      #volumes:
-        #- ./keystore/:/root/.ethereum/keystore
     networks:
       geth-private:
         ipv4_address: 172.19.0.2
     entrypoint:
-      - ash
-      - -c
-      - |
-          geth \
-          --networkid $$NETWORK_ID \
-          --password /private-net/files/password.txt \
-          --unlock $$UNLOCKED_ACCOUNTS \
-          --rpcapi="eth,net,web3,personal" \
-          --rpccorsdomain "*" \
-          --rpcaddr 0.0.0.0 \
-          --rpc \
-          --mine \
-          --minerthreads=1 \
-          --etherbase $$ETHERBASE \
-          --nodekeyhex $$BOOTNODE_KEY_HEX
+      - /private-net/scripts/start-bootnode.sh
   node:
     image: geth-private-net
     depends_on:
@@ -45,17 +29,8 @@ services:
     networks:
       geth-private:
     entrypoint:
-      - ash
-      - -c
-      - |
-          geth \
-          --networkid $$NETWORK_ID \
-          --password /private-net/files/password.txt \
-          --unlock $$UNLOCKED_ACCOUNTS \
-          --rpc \
-          --rpcaddr 0.0.0.0 \
-          --rpccorsdomain "*" \
-          --nodekeyhex $$NODE_KEY_HEX
+      - /private-net/scripts/start-node.sh
+         
 
 networks:
   geth-private:
@@ -68,3 +43,17 @@ networks:
 # For Reference:
 # BOOTNODE_IP=$$(dig +short bootnode)
 # --bootnodes=enode://$$BOOTNODE_ENODE@172.19.0.2:3030 \
+
+# - |
+#          geth \
+#          --networkid $$NETWORK_ID \
+#          --password /private-net/files/password.txt \
+#          --unlock $$UNLOCKED_ACCOUNTS \
+#          --rpcapi="eth,net,web3,personal" \
+#          --rpccorsdomain "*" \
+#          --rpcaddr 0.0.0.0 \
+#          --rpc \
+#          --mine \
+#          --minerthreads=1 \
+#          --etherbase $$ETHERBASE \
+#          --nodekeyhex $$BOOTNODE_KEY_HEX dumpconfig > ~/config.toml
