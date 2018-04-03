@@ -12,8 +12,8 @@ services:
     ports:
       - "8545:8545"
     env_file: .env
-    # volumes:
-      # - ./keystore/:/root/.ethereum/keystore
+      #volumes:
+        #- ./keystore/:/root/.ethereum/keystore
     networks:
       geth-private:
         ipv4_address: 172.19.0.2
@@ -22,17 +22,17 @@ services:
       - -c
       - |
           geth \
-          --nodekeyhex $$BOOTNODE_KEY_HEX \
           --networkid $$NETWORK_ID \
           --password /private-net/files/password.txt \
           --unlock $$UNLOCKED_ACCOUNTS \
-          --etherbase $$ETHERBASE \
-          --rpc \
-          --rpcport 8545 \
-          --rpcaddr 0.0.0.0 \
+          --rpcapi="eth,net,web3,personal" \
           --rpccorsdomain "*" \
+          --rpcaddr 0.0.0.0 \
+          --rpc \
           --mine \
-          --minerthreads=1
+          --minerthreads=1 \
+          --etherbase $$ETHERBASE \
+          --nodekeyhex $$BOOTNODE_KEY_HEX
   node:
     image: geth-private-net
     depends_on:
@@ -40,6 +40,8 @@ services:
     ports:
       - "8545"
     env_file: .env
+    volumes:
+      - ./private-net/files/static-nodes.json:/root/.ethereum/geth/static-nodes.json
     networks:
       geth-private:
     entrypoint:
@@ -47,16 +49,13 @@ services:
       - -c
       - |
           geth \
-          --fast \
-          --nodekeyhex $$NODE_KEY_HEX \
           --networkid $$NETWORK_ID \
           --password /private-net/files/password.txt \
           --unlock $$UNLOCKED_ACCOUNTS \
-          --etherbase $$ETHERBASE \
           --rpc \
-          --rpcport 8545 \
           --rpcaddr 0.0.0.0 \
-          --rpccorsdomain "*"
+          --rpccorsdomain "*" \
+          --nodekeyhex $$NODE_KEY_HEX
 
 networks:
   geth-private:

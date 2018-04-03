@@ -21,6 +21,6 @@ COPY --from=builder /go-ethereum/build/bin/bootnode /usr/local/bin/
 COPY ./private-net/files/ /private-net/files/
 COPY ./private-net/scripts/ /private-net/scripts/
 COPY ./private-net/keystore /root/.ethereum/keystore
-COPY ./private-net/files/static-nodes.json /root/.ethereum/geth/static-nodes.json
+# COPY ./private-net/files/static-nodes.json /root/.ethereum/geth/static-nodes.json
 
 RUN geth init /private-net/files/genesis.json
