@@ -16,20 +16,66 @@ services:
       geth-private:
         ipv4_address: 172.19.0.2
     entrypoint:
-      - /private-net/scripts/start-bootnode.sh
-  node:
-    image: geth-private-net
-    depends_on:
+      - ash
+      - -c
+      - |
+        geth \
+          --networkid $$NETWORK_ID \
+          --password /private-net/files/password.txt \
+          --unlock $$UNLOCKED_ACCOUNTS \
+          --rpc \
+          --rpccorsdomain "*" \
+          --rpcaddr 0.0.0.0 \
+          --rpcapi="eth,net,web3,personal" \
+          --verbosity 9 \
+          --nodekeyhex $$BOOTNODE_KEY_HEX 
+  miner:
+    depends_on: 
       - bootnode
+    image: geth-private-net
     ports:
       - "8545"
     env_file: .env
-    volumes:
-      - ./private-net/files/static-nodes.json:/root/.ethereum/geth/static-nodes.json
+    networks:
+      geth-private:
+        ipv4_address: 172.19.0.3
+    entrypoint:
+      - ash
+      - -c
+      - |
+        geth \
+          --networkid $$NETWORK_ID \
+          --password /private-net/files/password.txt \
+          --unlock $$UNLOCKED_ACCOUNTS \
+          --rpc \
+          --rpccorsdomain "*" \
+          --rpcaddr 0.0.0.0 \
+          --rpcapi="eth,net,web3,personal" \
+          --mine \
+          --minerthreads=1 \
+          --etherbase $$ETHERBASE \
+          --nodekeyhex $$MINER_KEY_HEX 
+  node:
+    depends_on:
+      - bootnode
+    image: geth-private-net
+    ports:
+      - "8545"
+    env_file: .env
     networks:
       geth-private:
     entrypoint:
-      - /private-net/scripts/start-node.sh
+      - ash
+      - -c
+      - |
+        geth \
+          --networkid $$NETWORK_ID \
+          --password /private-net/files/password.txt \
+          --unlock $UNLOCKED_ACCOUNTS \
+          --rpc \
+          --rpccorsdomain "*" \
+          --rpcaddr 0.0.0.0 \
+          --rpcapi="eth,net,web3,personal"
          
 
 networks:
