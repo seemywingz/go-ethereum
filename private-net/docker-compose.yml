@@ -7,7 +7,7 @@ services:
   bootnode:
     build: 
       context: ..
-      dockerfile: ./private-net/Dockerfile.preBuilt
+      dockerfile: ./private-net/Dockerfile
     image: geth-private-net
     ports:
       - "8545:8545"
@@ -15,19 +15,7 @@ services:
     networks:
       geth-private:
         ipv4_address: 172.19.0.2
-    entrypoint:
-      - ash
-      - -c
-      - |
-        geth \
-          --networkid $$NETWORK_ID \
-          --password /private-net/files/password.txt \
-          --unlock $$UNLOCKED_ACCOUNTS \
-          --rpc \
-          --rpccorsdomain "*" \
-          --rpcaddr 0.0.0.0 \
-          --rpcapi="eth,net,web3,personal" \
-          --nodekeyhex $$BOOTNODE_KEY_HEX 
+    command: --nodekeyhex $BOOTNODE_KEY_HEX 
   miner:
     depends_on: 
       - bootnode
@@ -37,21 +25,7 @@ services:
     env_file: .env
     networks:
       geth-private:
-    entrypoint:
-      - ash
-      - -c
-      - |
-        geth \
-          --networkid $$NETWORK_ID \
-          --password /private-net/files/password.txt \
-          --unlock $$UNLOCKED_ACCOUNTS \
-          --rpc \
-          --rpccorsdomain "*" \
-          --rpcaddr 0.0.0.0 \
-          --rpcapi="eth,net,web3,personal" \
-          --mine \
-          --minerthreads=1 \
-          --etherbase $$ETHERBASE
+    command: --mine --minerthreads=1 --etherbase $ETHERBASE
   node:
     depends_on:
       - bootnode
@@ -61,18 +35,6 @@ services:
     env_file: .env
     networks:
       geth-private:
-    entrypoint:
-      - ash
-      - -c
-      - |
-        geth \
-          --networkid $$NETWORK_ID \
-          --password /private-net/files/password.txt \
-          --unlock $$UNLOCKED_ACCOUNTS \
-          --rpc \
-          --rpccorsdomain "*" \
-          --rpcaddr 0.0.0.0 \
-          --rpcapi="eth,net,web3,personal"
          
 
 networks:
@@ -82,7 +44,3 @@ networks:
      config:
        - subnet: 172.19.0.0/16
          gateway: 172.19.0.1
-
-# For Reference:
-# BOOTNODE_IP=$$(dig +short bootnode)
-# --bootnodes=enode://$$BOOTNODE_ENODE@172.19.0.2:3030 \
