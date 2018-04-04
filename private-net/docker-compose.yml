@@ -26,15 +26,16 @@ services:
     networks:
       geth-private:
     command: --mine --minerthreads=1 --etherbase $ETHERBASE
-  node:
-    depends_on:
-      - bootnode
-    image: geth-private-net
-    ports:
-      - "8545"
-    env_file: .env
-    networks:
-      geth-private:
+  # Uncomment node if you want scale, i.e. docker-compose up --scale node=5  
+  # node:
+  #   depends_on:
+  #     - bootnode
+  #   image: geth-private-net
+  #   ports:
+  #     - "8545"
+  #   env_file: .env
+  #   networks:
+  #     geth-private:
          
 
 networks:
