@@ -14,6 +14,7 @@ services:
     env_file: .env
     networks:
       geth-private:
+        # Hard Code Port for Static Node Connection
         ipv4_address: 172.19.0.2
     command: --nodekeyhex $BOOTNODE_KEY_HEX 
   miner:
