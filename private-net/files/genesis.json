@@ -16,7 +16,6 @@
     "alloc": {
       "0x3cd1db5f09b51c56c266989aae66a61a13064039": {"balance": "0"},
       "0xa1640b88f612be6c2031ca07f0f4862dae4a3fae": {"balance": "0"},
-      "0xbebe38ec6ef2b5f3b56bfebb353ebc860e382155": {"balance": "1000000000000000000000000000000"},
-      "0xAf63f1c20a4ceB84c4b62Ca8EA99eb78746ab1A8": {"balance": "1000000000000000000000000000000"}
+      "0xbebe38ec6ef2b5f3b56bfebb353ebc860e382155": {"balance": "1000000000000000000000000000000"}
     }
 }

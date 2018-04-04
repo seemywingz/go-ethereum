@@ -27,7 +27,6 @@ services:
           --rpccorsdomain "*" \
           --rpcaddr 0.0.0.0 \
           --rpcapi="eth,net,web3,personal" \
-          --verbosity 9 \
           --nodekeyhex $$BOOTNODE_KEY_HEX 
   miner:
     depends_on: 
@@ -38,7 +37,6 @@ services:
     env_file: .env
     networks:
       geth-private:
-        ipv4_address: 172.19.0.3
     entrypoint:
       - ash
       - -c
@@ -53,8 +51,7 @@ services:
           --rpcapi="eth,net,web3,personal" \
           --mine \
           --minerthreads=1 \
-          --etherbase $$ETHERBASE \
-          --nodekeyhex $$MINER_KEY_HEX 
+          --etherbase $$ETHERBASE
   node:
     depends_on:
       - bootnode
@@ -71,7 +68,7 @@ services:
         geth \
           --networkid $$NETWORK_ID \
           --password /private-net/files/password.txt \
-          --unlock $UNLOCKED_ACCOUNTS \
+          --unlock $$UNLOCKED_ACCOUNTS \
           --rpc \
           --rpccorsdomain "*" \
           --rpcaddr 0.0.0.0 \
@@ -89,17 +86,3 @@ networks:
 # For Reference:
 # BOOTNODE_IP=$$(dig +short bootnode)
 # --bootnodes=enode://$$BOOTNODE_ENODE@172.19.0.2:3030 \
-
-# - |
-#          geth \
-#          --networkid $$NETWORK_ID \
-#          --password /private-net/files/password.txt \
-#          --unlock $$UNLOCKED_ACCOUNTS \
-#          --rpcapi="eth,net,web3,personal" \
-#          --rpccorsdomain "*" \
-#          --rpcaddr 0.0.0.0 \
-#          --rpc \
-#          --mine \
-#          --minerthreads=1 \
-#          --etherbase $$ETHERBASE \
-#          --nodekeyhex $$BOOTNODE_KEY_HEX dumpconfig > ~/config.toml
