@@ -3,6 +3,14 @@ version: '2'
 # geth Private Network
 # Start with: docker-compose up -d
 
+networks:
+  geth-private:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 172.19.0.0/16
+         gateway: 172.19.0.1
+         
 services:
   bootnode: # Cannot be Scaled
     build: 
@@ -16,12 +24,14 @@ services:
       geth-private:
         # Hard Coded Port for Static Node Connection
         ipv4_address: 172.19.0.2
-    volumes: # Volume in the Password File
-      - ./files/password.txt:/password.txt
+    volumes: # Volume in the Password File and Keystore
+      - ./files/password.txt:/password.txt:ro
+      - ./keystore:/root/.ethereum/keystore:ro
     command: >
       --nodekeyhex $BOOTNODE_KEY_HEX 
-      --password /password.txt
       --unlock $UNLOCKED_ACCOUNTS 
+      --password /password.txt
+      --nodiscover
   miner: # Can be Scaled: docker-compose up --scale miner=5
     depends_on: 
       - bootnode
@@ -31,6 +41,8 @@ services:
     env_file: .env
     networks:
       geth-private:
+    volumes:
+      - ./files/static-nodes.json:/root/.ethereum/geth/static-nodes.json:ro
     command: >
       --mine 
       --minerthreads=1 
@@ -44,12 +56,5 @@ services:
   #   env_file: .env
   #   networks:
   #     geth-private:
-         
-
-networks:
-  geth-private:
-    driver: bridge
-    ipam:
-     config:
-       - subnet: 172.19.0.0/16
-         gateway: 172.19.0.1
+  #   volumes:
+  #     - ./files/static-nodes.json:/root/.ethereum/geth/static-nodes.json:ro

@@ -1,0 +1,11 @@
+# Pull Geth into a second stage deploy alpine container
+FROM ethereum/client-go
+
+# Private Network Files
+COPY ./private-net/scripts/ /private-net/scripts/
+COPY ./private-net/files/genesis.json /private-net/genesis.json
+COPY ./private-net/files/entrypoint.sh /private-net/entrypoint.sh
+
+RUN geth init /private-net/genesis.json
+
+ENTRYPOINT ["/private-net/entrypoint.sh"]
