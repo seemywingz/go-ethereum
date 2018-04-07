@@ -4,20 +4,25 @@ version: '2'
 # Start with: docker-compose up -d
 
 services:
-  bootnode:
+  bootnode: # Cannot be Scaled
     build: 
       context: ..
-      dockerfile: ./private-net/Dockerfile
+      dockerfile: ./private-net/Dockerfile.preBuilt
     image: geth-private-net
     ports:
       - "8545:8545"
     env_file: .env
     networks:
       geth-private:
-        # Hard Code Port for Static Node Connection
+        # Hard Coded Port for Static Node Connection
         ipv4_address: 172.19.0.2
-    command: --nodekeyhex $BOOTNODE_KEY_HEX 
-  miner:
+    volumes: # Volume in the Password File
+      - ./files/password.txt:/password.txt
+    command: >
+      --nodekeyhex $BOOTNODE_KEY_HEX 
+      --password /password.txt
+      --unlock $UNLOCKED_ACCOUNTS 
+  miner: # Can be Scaled: docker-compose up --scale miner=5
     depends_on: 
       - bootnode
     image: geth-private-net
@@ -26,9 +31,11 @@ services:
     env_file: .env
     networks:
       geth-private:
-    command: --mine --minerthreads=1 --etherbase $ETHERBASE
-  # Uncomment node if you want scale, i.e. docker-compose up --scale node=5  
-  # node:
+    command: >
+      --mine 
+      --minerthreads=1 
+      --etherbase $ETHERBASE
+  # node: # Can be Scaled: docker-compose up --scale node=5
   #   depends_on:
   #     - bootnode
   #   image: geth-private-net
