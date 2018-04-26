@@ -4,7 +4,7 @@ FROM golang:1.10-alpine as builder
 RUN apk add --no-cache make gcc musl-dev linux-headers
 
 ADD . /go-ethereum
-RUN cd /go-ethereum && make all
+RUN cd /go-ethereum && make
 
 # Pull all binaries into a second stage deploy alpine container
 FROM alpine:latest
