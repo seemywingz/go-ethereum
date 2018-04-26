@@ -25,8 +25,9 @@ services:
         # Hard Coded IP for Static Node Connection
         ipv4_address: 10.10.10.10
     volumes: # Volume in the Password File and Keystore
-      - ./files/password.txt:/password.txt:ro
-      - ./keystore:/root/.ethereum/keystore:ro
+      # - ./bootnode:/root/.ethereum
+      - ./password.txt:/password.txt:ro
+      - ./keystore:/root/.ethereum/keystore
     command: >
       --nodekeyhex $BOOTNODE_KEY_HEX 
       --unlock $UNLOCKED_ACCOUNTS 
@@ -41,6 +42,7 @@ services:
     networks:
       geth-private:
     volumes:
+      # - ./miner:/root/.ethereum
       - ./files/static-nodes.json:/root/.ethereum/geth/static-nodes.json:ro
     command: >
       --mine 
