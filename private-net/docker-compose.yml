@@ -15,7 +15,7 @@ services:
   bootnode: # Cannot be Scaled
     build: 
       context: ..
-      dockerfile: ./private-net/Dockerfile.preBuilt
+      dockerfile: ./private-net/Dockerfile
     image: geth-private-net
     ports:
       - "8545:8545"
@@ -32,6 +32,7 @@ services:
       --unlock $UNLOCKED_ACCOUNTS 
       --password /password.txt
       --nodiscover
+      --verbosity 6
   miner: # Can be Scaled: docker-compose up --scale miner=5
     depends_on: 
       - bootnode

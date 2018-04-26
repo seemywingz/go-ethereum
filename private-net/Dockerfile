@@ -6,13 +6,11 @@ RUN apk add --no-cache make gcc musl-dev linux-headers
 ADD . /go-ethereum
 RUN cd /go-ethereum && make all
 
-# Pull Geth into a second stage deploy alpine container
+# Pull all binaries into a second stage deploy alpine container
 FROM alpine:latest
 
-RUN apk update && apk add --no-cache curl ca-certificates
-
-COPY --from=builder /go-ethereum/build/bin/geth /usr/local/bin/
-COPY --from=builder /go-ethereum/build/bin/bootnode /usr/local/bin/
+RUN apk add --no-cache ca-certificates
+COPY --from=builder /go-ethereum/build/bin/* /usr/local/bin/
 
 # Private Network Files
 COPY ./private-net/files/ /private-net/files/

@@ -2,10 +2,10 @@
 FROM ethereum/client-go
 
 # Private Network Files
+COPY ./private-net/files/ /private-net/files/
 COPY ./private-net/scripts/ /private-net/scripts/
-COPY ./private-net/files/genesis.json /private-net/genesis.json
-COPY ./private-net/files/entrypoint.sh /private-net/entrypoint.sh
+COPY ./private-net/keystore /root/.ethereum/keystore
 
-RUN geth init /private-net/genesis.json
+RUN geth init /private-net/files/genesis.json
 
-ENTRYPOINT ["/private-net/entrypoint.sh"]
+ENTRYPOINT ["/private-net/files/entrypoint.sh"]
