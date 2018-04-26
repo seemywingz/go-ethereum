@@ -15,7 +15,7 @@ services:
   bootnode: # Cannot be Scaled
     build: 
       context: ..
-      dockerfile: ./private-net/Dockerfile
+      dockerfile: ./private-net/Dockerfile.gethPreBuilt
     image: geth-private-net
     ports:
       - "8545:8545"
@@ -24,15 +24,14 @@ services:
       geth-private:
         # Hard Coded IP for Static Node Connection
         ipv4_address: 10.10.10.10
-    volumes: # Volume in the Password File and Keystore
-      # - ./bootnode:/root/.ethereum
-      - ./password.txt:/password.txt:ro
+    volumes: # Volume in Persistence, Password File and Keystore
+      - ./persistent/bootnode:/root/.ethereum
       - ./keystore:/root/.ethereum/keystore
+      - ./password.txt:/password.txt:ro
     command: >
       --nodekeyhex $BOOTNODE_KEY_HEX 
       --unlock $UNLOCKED_ACCOUNTS 
       --password /password.txt
-      --nodiscover
       --verbosity 6
   miner: # Can be Scaled: docker-compose up --scale miner=5
     depends_on: 
@@ -41,8 +40,8 @@ services:
     env_file: .env
     networks:
       geth-private:
-    volumes:
-      # - ./miner:/root/.ethereum
+    volumes: # Volume in Persistence and static-nodes.json
+      - ./persistent/miner:/root/.ethereum
       - ./files/static-nodes.json:/root/.ethereum/geth/static-nodes.json:ro
     command: >
       --mine 
@@ -53,10 +52,10 @@ services:
   #   depends_on:
   #     - bootnode
   #   image: geth-private-net
-  #   ports:
+  #   ports: # expose RPC on Dynamoc Port
   #     - "8545"
   #   env_file: .env
   #   networks:
   #     geth-private:
-  #   volumes:
+  #   volumes: # Volume in static-nodes.json
   #     - ./files/static-nodes.json:/root/.ethereum/geth/static-nodes.json:ro

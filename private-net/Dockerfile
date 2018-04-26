@@ -13,11 +13,6 @@ RUN apk add --no-cache ca-certificates
 COPY --from=builder /go-ethereum/build/bin/* /usr/local/bin/
 
 # Private Network Files
-COPY ./private-net/files/ /private-net/files/
-COPY ./private-net/scripts/ /private-net/scripts/
-COPY ./private-net/keystore /root/.ethereum/keystore
-# COPY ./private-net/files/static-nodes.json /root/.ethereum/geth/static-nodes.json
+COPY ./private-net/files/ /private-net/
 
-RUN geth init /private-net/files/genesis.json
-
-ENTRYPOINT ["/private-net/files/entrypoint.sh"]
+ENTRYPOINT ["/private-net/entrypoint.sh"]
