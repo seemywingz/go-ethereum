@@ -8,8 +8,8 @@ networks:
     driver: bridge
     ipam:
      config:
-       - subnet: 172.19.0.0/16
-         gateway: 172.19.0.1
+       - subnet: 10.10.10.0/24
+         gateway: 10.10.10.1
          
 services:
   bootnode: # Cannot be Scaled
@@ -22,8 +22,8 @@ services:
     env_file: .env
     networks:
       geth-private:
-        # Hard Coded Port for Static Node Connection
-        ipv4_address: 172.19.0.2
+        # Hard Coded IP for Static Node Connection
+        ipv4_address: 10.10.10.10
     volumes: # Volume in the Password File and Keystore
       - ./files/password.txt:/password.txt:ro
       - ./keystore:/root/.ethereum/keystore:ro
@@ -36,8 +36,6 @@ services:
     depends_on: 
       - bootnode
     image: geth-private-net
-    ports:
-      - "8545"
     env_file: .env
     networks:
       geth-private:
@@ -47,6 +45,7 @@ services:
       --mine 
       --minerthreads=1 
       --etherbase $ETHERBASE
+  # Uncomment the Following to Add More Nodes
   # node: # Can be Scaled: docker-compose up --scale node=5
   #   depends_on:
   #     - bootnode
