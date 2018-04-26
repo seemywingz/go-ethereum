@@ -15,7 +15,7 @@ services:
   bootnode: # Cannot be Scaled
     build: 
       context: ..
-      dockerfile: ./private-net/Dockerfile.gethPreBuilt
+      dockerfile: ./private-net/Dockerfile.geth
     image: geth-private-net
     ports:
       - "8545:8545"
@@ -25,7 +25,7 @@ services:
         # Hard Coded IP for Static Node Connection
         ipv4_address: 10.10.10.10
     volumes: # Volume in Persistence, Password File and Keystore
-      # - ./persistent/bootnode:/root/.ethereum
+      - ./persistent/bootnode:/root/.ethereum
       - ./keystore:/root/.ethereum/keystore
       - ./password.txt:/password.txt:ro
     command: >
