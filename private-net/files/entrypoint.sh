@@ -1,6 +1,7 @@
 #!/bin/ash
 
-geth init /private-net/genesis.json && \
+[[ -d "/root/.ethereum/geth/chaindata"  ]] || geth init /private-net/genesis.json
+
 geth \
   --networkid $NETWORK_ID \
   --nodiscover \

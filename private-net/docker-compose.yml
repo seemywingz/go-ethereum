@@ -29,24 +29,29 @@ services:
       - ./keystore:/root/.ethereum/keystore
       - ./password.txt:/password.txt:ro
     command: >
+      --verbosity 6
       --nodekeyhex $BOOTNODE_KEY_HEX 
       --unlock $UNLOCKED_ACCOUNTS 
       --password /password.txt
-      --verbosity 6
-  miner: # Can be Scaled: docker-compose up --scale miner=5
-    depends_on: 
-      - bootnode
-    image: geth-private-net
-    env_file: .env
-    networks:
-      geth-private:
-    volumes: # Volume in Persistence and static-nodes.json
-      # - ./persistent/miner:/root/.ethereum
-      - ./files/static-nodes.json:/root/.ethereum/geth/static-nodes.json:ro
-    command: >
       --mine 
       --minerthreads=1 
       --etherbase $ETHERBASE
+  # Uncomment the Following to Add More Miners
+  # You May Want to Remove the Minig Flags from the Bootnode
+  # miner: # Can be Scaled: docker-compose up --scale miner=5
+  #   depends_on: 
+  #     - bootnode
+  #   image: geth-private-net
+  #   env_file: .env
+  #   networks:
+  #     geth-private:
+  #   volumes: # Volume in Persistence and static-nodes.json
+  #     # - ./persistent/miner:/root/.ethereum
+  #     - ./files/static-nodes.json:/root/.ethereum/geth/static-nodes.json:ro
+  #   command: >
+  #     --mine 
+  #     --minerthreads=1 
+  #     --etherbase $ETHERBASE
   # Uncomment the Following to Add More Nodes
   # node: # Can be Scaled: docker-compose up --scale node=5
   #   depends_on:
